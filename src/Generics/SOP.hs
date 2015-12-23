@@ -240,7 +240,7 @@ module Generics.SOP (
     -- ** Constructing products
   , HPure(..)
     -- ** Application
-  , (-.->)(..)
+  -- , (-.->)(..)
   , fn
   , fn_2
   , fn_3

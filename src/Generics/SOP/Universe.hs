@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE UndecidableSuperClasses #-}
 -- | Codes and interpretations
 module Generics.SOP.Universe where
 

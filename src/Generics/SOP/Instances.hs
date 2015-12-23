@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# OPTIONS_GHC -fcontext-stack=50 #-}
+{-# OPTIONS_GHC -fcontext-stack=100 #-}
 -- | Instances for 'Generic' and 'HasMetadata'.
 --
 -- We define instances for datatypes from @generics-sop@ and

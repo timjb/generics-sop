@@ -130,7 +130,7 @@ deriveMetadataValue n codeName datatypeInfoName = do
              , funD datatypeInfoName' [clause [] (normalB $ metadata' isNewtype name cons) []] -- treeDatatypeInfo = ...
              ]
 
-deriveGenericForDataDec :: Bool -> Cxt -> Name -> [TyVarBndr] -> [Con] -> [Name] -> Q [Dec]
+deriveGenericForDataDec :: Bool -> Cxt -> Name -> [TyVarBndr] -> [Con] -> Cxt -> Q [Dec]
 deriveGenericForDataDec _isNewtype _cxt name bndrs cons _derivs = do
   let typ = appTyVars name bndrs
 #if MIN_VERSION_template_haskell(2,9,0)
@@ -144,7 +144,7 @@ deriveGenericForDataDec _isNewtype _cxt name bndrs cons _derivs = do
             [codeSyn, embedding 'from cons, projection 'to cons]
   return [inst]
 
-deriveMetadataForDataDec :: Bool -> Cxt -> Name -> [TyVarBndr] -> [Con] -> [Name] -> Q [Dec]
+deriveMetadataForDataDec :: Bool -> Cxt -> Name -> [TyVarBndr] -> [Con] -> Cxt -> Q [Dec]
 deriveMetadataForDataDec isNewtype _cxt name bndrs cons _derivs = do
   let typ = appTyVars name bndrs
   md   <- instanceD (cxt [])
@@ -230,11 +230,10 @@ metadata' isNewtype typeName cs = md
                                            $(npE (map mdField ts))
                              |]
     mdCon (InfixC _ n _)  = do
-      i <- reify n
+      i <- reifyFixity n
       case i of
-        DataConI _ _ _ (Fixity f a) ->
+        Fixity f a ->
                             [| Infix       $(stringE (nameBase n)) $(mdAssociativity a) f |]
-        _                -> fail "Strange infix operator"
     mdCon (ForallC _ _ _) = fail "Existentials not supported"
 
     mdField :: VarStrictType -> Q Exp
@@ -296,7 +295,7 @@ reifyDec name =
      case info of TyConI dec -> return dec
                   _          -> fail "Info must be type declaration type."
 
-withDataDec :: Dec -> (Bool -> Cxt -> Name -> [TyVarBndr] -> [Con] -> [Name] -> Q a) -> Q a
+withDataDec :: Dec -> (Bool -> Cxt -> Name -> [TyVarBndr] -> [Con] -> Cxt -> Q a) -> Q a
 withDataDec (DataD    ctxt name bndrs cons derivs) f = f False ctxt name bndrs cons  derivs
 withDataDec (NewtypeD ctxt name bndrs con  derivs) f = f True  ctxt name bndrs [con] derivs
 withDataDec _ _ = fail "Can only derive labels for datatypes and newtypes."

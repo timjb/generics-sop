@@ -2,6 +2,7 @@
 #if __GLASGOW_HASKELL__ < 710
 {-# LANGUAGE OverlappingInstances #-}
 #endif
+{-# LANGUAGE UndecidableSuperClasses #-}
 {-# OPTIONS_GHC -fno-warn-orphans -fno-warn-deprecations #-}
 -- | Constraints for indexed datatypes.
 --
@@ -135,5 +136,5 @@ instance
 #if __GLASGOW_HASKELL__ >= 710
   {-# OVERLAPPING #-}
 #endif
-  All SListI xss => SingI (xss :: [[k]]) where
+  (SListI xss, All SListI xss) => SingI (xss :: [[k]]) where
   sing = sList
